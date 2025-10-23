@@ -8,7 +8,15 @@
       "Bash(./gradlew assembleDebug:*)",
       "Read(//c/Users/Clement.LeCorre/mediapipe-samples/examples/llm_inference/android/**)",
       "Bash(dir /s \"C:\\Users\\Clement.LeCorre\\mediapipe-samples\\examples\\llm_inference\\android\\app\\src\")",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(dir /s \"C:\\Users\\Clement.LeCorre\\mediapipe-samples\\examples\\text_embedder\")",
+      "Read(//c/Users/Clement.LeCorre/mediapipe-samples/examples/text_embedder/android/**)",
+      "WebFetch(domain:docs.objectbox.io)",
+      "WebFetch(domain:objectbox.io)",
+      "Bash(./gradlew clean:*)",
+      "Bash(dir \"C:\\Users\\Clement.LeCorre\\AndroidStudioProjects\\AIDocumentReader\\app\\src\\main\\assets\\models\")"
     ],
     "deny": [],
     "ask": []

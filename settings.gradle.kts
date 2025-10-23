@@ -9,6 +9,8 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        // ObjectBox repository for the Gradle plugin
+        maven { url = uri("https://raw.githubusercontent.com/objectbox/objectbox-java/main") }
     }
 }
 dependencyResolutionManagement {
@@ -16,6 +18,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // ObjectBox repository for runtime dependencies
+        maven { url = uri("https://raw.githubusercontent.com/objectbox/objectbox-java/main") }
     }
 }
 
