@@ -1,6 +1,6 @@
 # AI Document Reader
 
-An on-device RAG (Retrieval-Augmented Generation) Android application that lets you upload PDF documents and ask questions using natural language - completely offline, no cloud required.
+An on-device RAG (Retrieval-Augmented Generation) Android application that lets you upload PDF documents and ask questions using natural language completely offline, no cloud required.
 
 ## Overview
 
