@@ -31,17 +31,17 @@ AI Document Reader implements a complete RAG pipeline on Android devices, combin
                                     │     │ (HNSW Index) │
                                     │     └──────────────┘
                                     │
-                                    │     ┌──────────────┐
-┌──────────┐                        │  5  │    Query     │
-│   User   │───────────────────────────>│   Embedding  │
-│ Question │                             └──────┬───────┘
-└──────────┘                                    │
-                                                v
-      ┌─────────────────────────────────────────┘
+                                    │     ┌─────────────┐
+┌──────────┐                        │  5  │    Query    │
+│   User   │─────────────────────────────>│   Embedding │
+│ Question │                              └──────┬──────┘
+└──────────┘                                     │
+                                                 v
+      ┌──────────────────────────────────────────┘
       │                           6
       │                    ┌──────────────┐
       │                    │ HNSW Search  │
-      │                    │  (~8ms ⚡)   │
+      │                    │    (~8ms)    │
       │                    └──────┬───────┘
       │                           │
       │                           v
@@ -104,7 +104,7 @@ User Question
      │   ├─> Search space: All document chunks
      │   ├─> Algorithm: Hierarchical NSW
      │   ├─> Returns: Top K=3 chunks
-     │   └─> ~8ms ⚡
+     │   └─> ~8ms
      │
      ├─> Build Context Prompt
      │   ├─> Concatenate retrieved chunks
@@ -156,23 +156,23 @@ Total Time: ~8s end-to-end
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│                  Performance Profile                  │
+│                  Performance Profile                 │
 ├──────────────────────────────────────────────────────┤
 │ Document Upload (20 pages)               ~4s         │
 │  ├─ Text Extraction                      ~1s         │
 │  ├─ Chunking                             ~50ms       │
 │  └─ Embedding Generation                 ~2.6s       │
-│                                                       │
+│                                                      │
 │ Query Answering                          ~8s         │
 │  ├─ Question Embedding                   ~20ms       │
-│  ├─ HNSW Vector Search                   ~8ms  ⚡    │
+│  ├─ HNSW Vector Search                   ~8ms        │
 │  └─ LLM Generation                       ~5-8s       │
-│                                                       │
-│ Memory Usage                                          │
+│                                                      │
+│ Memory Usage                                         │
 │  ├─ MobileBERT Model                     ~25 MB      │
-│  ├─ Gemma 3 1B Model (8-bit)            ~800 MB     │
+│  ├─ Gemma 3 1B Model (8-bit)            ~800 MB      │
 │  └─ ObjectBox Database                   ~2-5 MB     │
-│                                                       │
+│                                                      │
 │ Vector Search Scaling (HNSW)                         │
 │  ├─ 1,000 chunks                         ~4ms        │
 │  ├─ 10,000 chunks                        ~8ms        │
@@ -282,7 +282,7 @@ Get the model from [Google AI Edge](https://ai.google.dev/edge/mediapipe/solutio
 - Model: MobileBERT (512 dimensions)
 - Processing: ~20ms per chunk
 - Output: L2-normalized float vectors
-- Device: CPU (for reliability)
+- Device: CPU
 
 #### 4. Vector Storage (`ObjectBox`)
 - Database: ObjectBox with HNSW index
@@ -325,24 +325,6 @@ app/src/main/assets/
 
 ## Key Algorithms
 
-### HNSW (Hierarchical Navigable Small World)
-
-```
-Graph-based ANN (Approximate Nearest Neighbor)
-
-Advantages:
-✓ O(log n) search time
-✓ High recall (>95%)
-✓ Memory efficient
-✓ Incremental updates
-
-How it works:
-1. Multi-layer graph structure
-2. Navigate from top layer (coarse) to bottom (fine)
-3. Greedy search at each layer
-4. Returns approximate K-nearest neighbors
-```
-
 ### Cosine Similarity
 
 ```
@@ -357,89 +339,6 @@ Why cosine?
 ✓ Normalized (handles vector magnitude)
 ✓ Fast computation (dot product)
 ✓ Standard for semantic similarity
-```
-
-## Troubleshooting
-
-### Out of Memory Error
-
-**Problem**: App crashes when loading LLM
-**Solution**:
-- Ensure device has 2GB+ free RAM
-- Close other apps before loading
-- Consider using smaller model variant
-
-### Slow Query Response
-
-**Problem**: Queries take >15 seconds
-**Solution**:
-- Check CPU usage (other apps)
-- Reduce max tokens in `LlmService.kt`
-- Use fewer chunks (reduce `topK`)
-
-### Model Not Found
-
-**Problem**: `FileNotFoundException` for models
-**Solution**:
-- Verify models in correct assets directory
-- Check file names match exactly
-- Rebuild project to include assets
-
-## Performance Tuning
-
-### Speed Optimization
-
-```kotlin
-// In LlmService.kt
-private const val MAX_TOKENS = 512          // Reduce for speed
-private const val DECODE_TOKEN_OFFSET = 128 // Shorter answers
-
-// In RagRepository.kt
-private const val CHUNK_SIZE = 300          // Smaller chunks
-fun answerQuestion(topK: Int = 2)           // Fewer chunks
-```
-
-### Memory Optimization
-
-```kotlin
-// Close services when not needed
-embeddingService.close()
-llmService.close()
-
-// Clear old documents
-ragRepository.deleteDocument(documentId)
-```
-
-## Future Enhancements
-
-- [ ] Support for DOCX, TXT formats
-- [ ] Multi-document search
-- [ ] Conversation history
-- [ ] GPU acceleration
-- [ ] Model quantization options
-- [ ] Export answers to markdown
-- [ ] Custom chunking strategies
-- [ ] Fine-tune embedding model
-
-## Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new features
-4. Submit pull request
-
-## License
-
-MIT License - see LICENSE file for details
-
-## Acknowledgments
-
-- **Google MediaPipe** - On-device ML inference
-- **ObjectBox** - High-performance vector database
-- **Apache PDFBox** - PDF processing
-- **MobileBERT** - Compact BERT model
-- **Gemma** - Open-source LLM from Google
 
 ## References
 
@@ -449,5 +348,3 @@ MIT License - see LICENSE file for details
 - [HNSW Algorithm](https://arxiv.org/abs/1603.09320)
 
 ---
-
-Built with ❤️ for on-device AI
