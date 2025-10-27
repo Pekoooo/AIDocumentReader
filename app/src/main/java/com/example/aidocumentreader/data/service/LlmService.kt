@@ -1,6 +1,7 @@
 package com.example.aidocumentreader.data.service
 
 import android.content.Context
+import android.icu.util.TimeUnit
 import android.util.Log
 import com.example.aidocumentreader.presentation.ocr.ChatMessage
 import com.google.mediapipe.tasks.genai.llminference.LlmInference
@@ -187,15 +188,15 @@ class LlmService(
         private const val TAG = "LlmService"
         private const val MODEL_FILE_NAME = "Gemma3-1B-IT_multi-prefill-seq_q8_ekv2048.task"
 
-        // Token budget configuration (optimized for Gemma 3 1B model)
-        private const val MAX_TOKENS = 2048  // Total tokens for input + output
-        private const val DECODE_TOKEN_OFFSET = 512  // Reserved for model output
-        private const val EFFECTIVE_INPUT_LIMIT = MAX_TOKENS - DECODE_TOKEN_OFFSET  // 1536 tokens
+        // Token budget configuration (optimized for speed on Gemma 3 1B)
+        private const val MAX_TOKENS = 1024  // Total tokens for input + output (reduced for speed)
+        private const val DECODE_TOKEN_OFFSET = 200  // Reserved for model output (shorter answers = faster)
+        private const val EFFECTIVE_INPUT_LIMIT = MAX_TOKENS - DECODE_TOKEN_OFFSET  // 824 tokens
 
-        // Session parameters (optimized for Gemma 3 1B settings)
-        private const val TEMPERATURE = 0.6f
-        private const val TOP_K = 50
-        private const val TOP_P = 0.9f
+        // Session parameters (tuned for factual Q&A)
+        private const val TEMPERATURE = 0.3f  // Lower for more factual, less creative
+        private const val TOP_K = 25         // More focused token selection
+        private const val TOP_P = 0.8f       // More deterministic sampling
     }
 
     /**
@@ -213,18 +214,16 @@ class LlmService(
      * - Session manages context window automatically
      */
     suspend fun askQuestion(
-        documentText: String,
-        conversationHistory: List<ChatMessage>,
-        question: String
+        prompt: String
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "Received question: $question")
+            Log.d(TAG, "Received prompt for LLM inference")
 
             // Ensure LLM is initialized
             if (!isInitialized) {
                 Log.d(TAG, "LLM not initialized, initializing now")
                 initialize().onFailure {
-                    Log.e(TAG, "Failed to initialize LLM for question")
+                    Log.e(TAG, "Failed to initialize LLM")
                     return@withContext Result.failure(it)
                 }
             }
@@ -237,9 +236,6 @@ class LlmService(
                 }
             }
 
-            // Build the prompt with AGGRESSIVE truncation to fit token budget
-            Log.d(TAG, "Building prompt with document context")
-            val prompt = buildPrompt(documentText, conversationHistory, question)
             Log.d(TAG, "Prompt length: ${prompt.length} characters (~${prompt.length / 4} tokens estimate)")
 
             // Add query to session
@@ -255,8 +251,9 @@ class LlmService(
             val response = llmInferenceSession?.generateResponse()
                 ?: return@withContext Result.failure(Exception("Session not initialized"))
 
-            val inferenceTime = System.currentTimeMillis() - startTime
-            Log.d(TAG, "LLM response generated in ${inferenceTime}ms")
+            val inferenceTime = (System.currentTimeMillis() - startTime) / 1000
+
+            Log.d(TAG, "LLM response generated in ${inferenceTime}s")
             Log.d(TAG, "Response length: ${response.length} characters")
 
             // Return the generated text
@@ -267,54 +264,6 @@ class LlmService(
         }
     }
 
-    /**
-     * Builds the prompt for the LLM.
-     *
-     * TOKEN BUDGET (Gemma 3 1B - 8-bit quantized):
-     * - Total: 2048 tokens
-     * - Output reserve: 512 tokens
-     * - Available for input: 1536 tokens
-     * - ~4 chars per token → ~6144 chars max
-     * - We use conservative limits for safety
-     *
-     * TRUNCATION STRATEGY:
-     * - Document: First 800 chars (better context than before)
-     * - History: Skip entirely (save tokens)
-     * - System prompt: Minimal
-     * - Total prompt: ~900-1000 chars (~225-250 tokens)
-     * - Leaves plenty of room for longer documents
-     */
-    private fun buildPrompt(
-        documentText: String,
-        conversationHistory: List<ChatMessage>,
-        question: String
-    ): String {
-        // Conservative truncation to fit token budget
-        // 800 chars ≈ 200 tokens, much better context than before
-        val maxDocLength = 800
-        val truncatedDoc = if (documentText.length > maxDocLength) {
-            documentText.take(maxDocLength) + "..."
-        } else {
-            documentText
-        }
-
-        // Ultra-minimal prompt to reduce memory usage
-        return buildString {
-            // Minimal system instruction
-            appendLine("You are a helpful assistant. Answer briefly based on this document:")
-            appendLine()
-
-            // Minimal document context
-            appendLine(truncatedDoc)
-            appendLine()
-
-            // Skip conversation history to save tokens
-
-            // Current question
-            appendLine("Q: $question")
-            append("A:")
-        }
-    }
 
     /**
      * Cleans up resources.

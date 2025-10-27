@@ -73,6 +73,6 @@ class DocumentRepositoryImpl @Inject constructor(
         conversationHistory: List<ChatMessage>,
         question: String
     ): Result<String> {
-        return llmService.askQuestion(documentText, conversationHistory, question)
+        return llmService.askQuestion(documentText)
     }
 }
