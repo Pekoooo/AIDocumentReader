@@ -1,0 +1,156 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:5358244263044326287",
+      "lastPropertyId": "14:3773266596285002224",
+      "name": "Document",
+      "properties": [
+        {
+          "id": "1:6192344681065851710",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:6570199874366701613",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:6836804790358952735",
+          "name": "filePath",
+          "type": 9
+        },
+        {
+          "id": "4:2613087902483532165",
+          "name": "fileType",
+          "type": 9
+        },
+        {
+          "id": "5:4091033866023442914",
+          "name": "fullText",
+          "type": 9
+        },
+        {
+          "id": "6:6179421449658208443",
+          "name": "pageCount",
+          "type": 5
+        },
+        {
+          "id": "7:6164271587665329009",
+          "name": "wordCount",
+          "type": 5
+        },
+        {
+          "id": "8:3598680357330912784",
+          "name": "totalChunks",
+          "type": 5
+        },
+        {
+          "id": "9:7718757471579550993",
+          "name": "isProcessed",
+          "type": 1
+        },
+        {
+          "id": "10:5596256160043622300",
+          "name": "processingError",
+          "type": 9
+        },
+        {
+          "id": "11:1194312152796202389",
+          "name": "uploadedAt",
+          "type": 6
+        },
+        {
+          "id": "12:4810860284770700836",
+          "name": "processedAt",
+          "type": 6
+        },
+        {
+          "id": "13:3370772299193510442",
+          "name": "tags",
+          "type": 9
+        },
+        {
+          "id": "14:3773266596285002224",
+          "name": "notes",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "2:2755414056325290905",
+      "lastPropertyId": "9:5775355757615065149",
+      "name": "DocumentChunk",
+      "properties": [
+        {
+          "id": "1:8129412761515007734",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:389322901164048320",
+          "name": "documentId",
+          "indexId": "1:3760565177153342800",
+          "type": 11,
+          "flags": 520,
+          "relationTarget": "Document"
+        },
+        {
+          "id": "3:4716114514523518568",
+          "name": "chunkIndex",
+          "type": 5
+        },
+        {
+          "id": "4:2275685960885842350",
+          "name": "text",
+          "type": 9
+        },
+        {
+          "id": "5:3907137296637724245",
+          "name": "pageNumber",
+          "type": 5
+        },
+        {
+          "id": "6:7245495527399222271",
+          "name": "startPosition",
+          "type": 5
+        },
+        {
+          "id": "7:162019314890772107",
+          "name": "endPosition",
+          "type": 5
+        },
+        {
+          "id": "8:132974860859411797",
+          "name": "embedding",
+          "indexId": "2:1328539027089349488",
+          "type": 28,
+          "flags": 8
+        },
+        {
+          "id": "9:5775355757615065149",
+          "name": "createdAt",
+          "type": 6
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "2:2755414056325290905",
+  "lastIndexId": "2:1328539027089349488",
+  "lastRelationId": "0:0",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
