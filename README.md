@@ -9,7 +9,7 @@ AI Document Reader implements a complete RAG pipeline on Android devices, combin
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    AI DOCUMENT READER                           │
-│                   RAG Pipeline Architecture                      │
+│                   RAG Pipeline Architecture                     │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌───────────┐      ┌──────────────┐      ┌─────────────┐
@@ -178,64 +178,6 @@ Total Time: ~8s end-to-end
 │  ├─ 10,000 chunks                        ~8ms        │
 │  └─ 100,000 chunks                       ~15ms       │
 └──────────────────────────────────────────────────────┘
-```
-
-## Requirements
-
-- **Android SDK**: API 24+ (Android 7.0 Nougat)
-- **Target SDK**: API 36
-- **RAM**: Minimum 2GB free (for LLM model)
-- **Storage**: ~1GB for models
-- **CPU**: ARMv8 or x86_64
-
-## Setup Instructions
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/yourusername/AIDocumentReader.git
-cd AIDocumentReader
-```
-
-### 2. Download Models
-
-#### MobileBERT Embedding Model
-
-Download the embedding model and place it in the correct location:
-
-```bash
-# Download mobile_bert.tflite
-curl -o app/src/main/assets/models/mobile_bert.tflite \
-  https://storage.googleapis.com/mediapipe-models/text_embedder/bert_embedder/float32/1/bert_embedder.tflite
-```
-
-Or manually:
-1. Download from: https://storage.googleapis.com/mediapipe-models/text_embedder/bert_embedder/float32/1/bert_embedder.tflite
-2. Create directory: `app/src/main/assets/models/`
-3. Place file as: `app/src/main/assets/models/mobile_bert.tflite`
-
-#### Gemma 3 1B LLM Model
-
-Download the Gemma 3 1B model:
-
-```bash
-# Download Gemma 3 1B (8-bit quantized)
-# Place in: app/src/main/assets/Gemma3-1B-IT_multi-prefill-seq_q8_ekv2048.task
-```
-
-Get the model from [Google AI Edge](https://ai.google.dev/edge/mediapipe/solutions/genai/llm_inference)
-
-### 3. Build Project
-
-```bash
-./gradlew assembleDebug
-```
-
-### 4. Install on Device
-
-```bash
-./gradlew installDebug
-```
 
 ## Usage
 
